@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#101622">
+<title>Alliance Builder — Private Team Missions</title>
+<style>
+:root{color-scheme:dark;--bg:#101622;--panel:#192234;--panel2:#1f2b3f;--line:#35435b;--text:#f4f7fd;--muted:#aebdd1;--subtle:#75869f;--mint:#8bf0ca;--mintdark:#10352d;--peach:#ffc6a0;--danger:#ffb7af;--r:20px}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:var(--bg);font-family:ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--text)}
+body{background:radial-gradient(ellipse 70% 55% at 90% -15%,#29434366,transparent 80%),radial-gradient(ellipse 70% 55% at -15% 115%,#25305b66,transparent 80%),var(--bg)}
+button,input{font:inherit}
+button{cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:3px solid var(--mint);outline-offset:3px}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:not(:disabled):active{transform:translateY(1px)}
+.app{height:100%;height:100dvh;max-width:980px;margin:auto;padding:clamp(10px,2vw,20px);padding-top:max(12px,env(safe-area-inset-top));padding-bottom:max(12px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:12px;min-height:0}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:10px;flex:none;min-height:50px}
+.brand{display:flex;align-items:center;gap:11px;min-width:0}
+.mark{width:43px;height:43px;border:1px solid #9df1d3;display:grid;place-items:center;border-radius:14px;background:linear-gradient(145deg,#27493f,#182835);color:var(--mint);font-size:18px;font-weight:900;letter-spacing:-2px;flex:none;display:flex;align-items:center;justify-content:center;white-space:nowrap}
+.brand-text{display:flex;flex-direction:column;line-height:1.08;gap:5px}
+.brand-text strong{font-weight:900;letter-spacing:.045em;font-size:16px}
+.brand-text span{font-size:11px;color:var(--muted);letter-spacing:.05em}
+.top-pill{display:inline-flex;align-items:center;gap:6px;padding:8px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);font-size:12px;font-weight:700;white-space:nowrap}
+.top-pill .dot{width:7px;height:7px;background:var(--mint);border-radius:50%}
+main{width:100%;max-width:790px;margin:0 auto;flex:1;min-height:0;display:flex;flex-direction:column}
+.screen{flex:1;min-height:0;display:flex;flex-direction:column;gap:11px}
+.scroll-area{flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#51617a transparent;padding:2px 3px 6px}
+.scroll-area>*+*{margin-top:13px}
+.intro h1{font-size:clamp(26px,5vw,37px);letter-spacing:-.055em;line-height:1.05;margin:4px 0 7px;font-weight:850}
+.intro h1 em{font-style:normal;color:var(--mint)}
+.intro p{margin:0;color:var(--muted);font-size:14px;line-height:1.4}
+.card{background:linear-gradient(160deg,#1c2940,#182335);border:1px solid var(--line);border-radius:var(--r);padding:clamp(14px,2.7vw,20px);box-shadow:0 12px 36px #00000010}
+.section-head{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:11px}
+.section-head h2{font-size:15px;letter-spacing:-.025em;margin:0;font-weight:800}
+.count{border:1px solid #47746a;color:var(--mint);border-radius:999px;padding:5px 10px;font-size:12px;font-weight:800;white-space:nowrap}
+.add-form{display:flex;gap:8px}
+.name-input{flex:1;min-width:0;background:#101a2b;border:1px solid #4a5a73;border-radius:13px;color:var(--text);padding:12px 14px;height:47px;font-size:16px}
+.name-input::placeholder{color:#96a6bb}
+.btn{border:1px solid transparent;border-radius:13px;font-weight:800;min-height:47px;padding:11px 18px;display:inline-flex;align-items:center;justify-content:center;gap:8px;text-align:center;transition:background .15s,border-color .15s,transform .08s}
+.btn-primary{background:var(--mint);color:#0b2923;box-shadow:0 6px 20px #8bf0ca13}
+.btn-primary:hover:not(:disabled){background:#a7f7dc}
+.btn-secondary{background:#26344c;border-color:#51617a;color:#f5f8fd}
+.btn-secondary:hover:not(:disabled){background:#30425d}
+.btn-outline{background:transparent;border-color:#56667f;color:var(--text)}
+.btn-outline:hover:not(:disabled){background:#243349}
+.btn-danger{background:#362a38;border-color:#664858;color:var(--danger)}
+.btn-big{min-height:55px;font-size:16px;width:100%}
+#playerChips{display:flex;flex-wrap:wrap;gap:7px;max-height:130px;overflow:auto;scrollbar-width:thin}
+.chip{display:inline-flex;align-items:center;gap:7px;max-width:100%;background:#27374c;border:1px solid #45576e;border-radius:999px;padding:6px 7px 6px 12px;font-size:13px;font-weight:650}
+.chip-name{max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip button{width:24px;height:24px;min-height:24px;border:0;border-radius:50%;display:grid;place-items:center;color:#ced8e5;background:#455670;font-size:17px;line-height:1;padding:0}
+.chip button:hover{background:#765561;color:#fff}
+.empty{padding:13px;border:1px dashed #506079;border-radius:12px;color:var(--muted);font-size:13px;text-align:center}
+.field-error{color:var(--danger);font-weight:650;font-size:12px;margin:7px 0 0}
+.setting-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.setting{border:0;min-width:0;padding:0;margin:0}
+.setting legend{color:#e6edf8;font-size:13px;font-weight:800;margin-bottom:7px;padding:0}
+.choice-row{display:grid;grid-template-columns:repeat(var(--items),minmax(0,1fr));gap:5px}
+.choice{position:relative;min-width:0}
+.choice input{position:absolute;opacity:0;width:1px;height:1px;top:50%;left:50%}
+.choice label{min-height:42px;display:flex;align-items:center;justify-content:center;border:1px solid #455771;background:#111c2d;color:#c0cedf;padding:6px 7px;border-radius:10px;font-size:12px;font-weight:750;text-align:center;line-height:1.15;cursor:pointer;user-select:none}
+.choice input:checked+label{background:#173e38;border-color:var(--mint);color:#a7ffdd;box-shadow:inset 0 0 0 1px #65d8b27a}
+.choice input:focus-visible+label{outline:3px solid var(--mint);outline-offset:3px}
+.setting-wide{grid-column:1/-1}
+.settings-footnote{font-size:12px;color:var(--muted);margin-top:12px;line-height:1.35}
+.setup-footer,.action-bar{flex:none;display:flex;flex-direction:column;gap:7px}
+.footer-hint{color:var(--muted);font-size:12px;text-align:center;min-height:17px}
+.play-head{display:flex;align-items:center;gap:12px;flex:none}
+.clock-card{background:#1b2a3e;border:1px solid #425670;border-radius:17px;padding:12px 15px;display:flex;justify-content:space-between;align-items:center;gap:15px;flex:1;min-width:0}
+.eyebrow{font-size:11px;letter-spacing:.13em;text-transform:uppercase;font-weight:900;color:var(--mint)}
+.clock-left{display:flex;flex-direction:column;gap:5px}
+#timerDisplay{font-size:clamp(26px,5vw,37px);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:-.06em;line-height:1}
+#timerDisplay.urgent{color:var(--peach)}
+.clock-right{min-width:0;text-align:right}
+.clock-right strong{display:block;font-size:16px}
+.clock-right span{display:block;font-size:11px;color:var(--muted);margin-top:5px}
+.progress-track{width:100%;height:5px;background:#2b3b52;border-radius:50px;overflow:hidden;flex:none}
+#progressBar{height:100%;width:100%;background:linear-gradient(90deg,#65bbd2,var(--mint));transition:width .25s linear}
+.stage{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.stage-card{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.stage-head h1{margin:0 0 8px;font-size:clamp(24px,5vw,33px);letter-spacing:-.045em;line-height:1.06}
+.stage-head p{margin:0;color:var(--muted);font-size:14px;line-height:1.45}
+.announcement{display:flex;align-items:center;gap:8px;background:#383028;border:1px solid #7e614a;border-radius:13px;color:#ffe0be;font-weight:700;font-size:13px;padding:11px 12px}
+#nameGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;overflow-y:auto;min-height:0;align-content:start;scrollbar-width:thin;padding:2px}
+.name-choice{border:1px solid #4c5f7a;border-radius:15px;min-height:60px;background:#202d43;color:var(--text);display:flex;align-items:center;gap:9px;padding:9px 11px;text-align:left;min-width:0}
+.name-choice:hover{background:#293b53;border-color:#729284}
+.name-choice .avatar{width:36px;height:36px;flex:none;border-radius:11px;background:#315348;color:#b2f9df;display:grid;place-items:center;font-weight:850;font-size:15px}
+.name-choice .name-content{display:flex;flex-direction:column;min-width:0;gap:3px;flex:1}
+.name-choice .name-label{font-size:14px;font-weight:800;overflow-wrap:anywhere}
+.name-choice .small-label{font-size:11px;color:#ffd2a9}
+.name-choice .chev{color:var(--mint);font-weight:800;font-size:21px}
+.name-choice.is-out{border-color:#786148;background:#312b2b}
+.name-choice.is-out .avatar{background:#68513c;color:#ffdab4}
+.privacy-note{color:var(--muted);font-size:12px;line-height:1.5;margin:0}
+.stage-bottom{display:flex;justify-content:space-between;align-items:center;gap:12px;flex:none}
+.mini-btn{border:0;background:transparent;color:#b8c9dd;text-decoration:underline;text-underline-offset:3px;padding:7px 2px;font-size:12px;font-weight:700}
+.private-wrap{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:16px;text-align:center;max-width:600px;width:100%;margin:auto}
+.private-icon{height:68px;width:68px;border:1px solid #649d8c;border-radius:24px;background:#21483e;color:var(--mint);display:grid;place-items:center;font-size:30px;font-weight:850;margin:0 auto}
+.private-wrap h1{font-size:clamp(27px,6vw,41px);letter-spacing:-.055em;line-height:1.08;margin:0;overflow-wrap:anywhere}
+.private-wrap p{color:var(--muted);line-height:1.5;font-size:14px;margin:0}
+.name-emphasis{color:var(--mint)}
+.private-buttons{display:flex;flex-direction:column;gap:10px;max-width:430px;width:100%;margin:0 auto}
+.mission-layout{flex:1;min-height:0;display:flex;flex-direction:column;gap:10px}
+.mission-card{flex:1;min-height:0;display:flex;flex-direction:column;gap:13px;background:radial-gradient(circle at 100% 0%,#264c46 0%,transparent 50%),linear-gradient(160deg,#243248,#182536);border:1px solid #587b77;border-radius:23px;padding:clamp(15px,4vw,25px)}
+.mission-top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.mission-top small{color:#bbd7d4;font-size:12px;font-weight:800}
+.mission-top button{border:1px solid #6c8d8a;border-radius:9px;background:#283d48;color:var(--text);min-height:37px;padding:7px 12px;font-weight:800;font-size:12px}
+.mission-details{flex:1;display:flex;flex-direction:column;justify-content:flex-start;gap:12px;min-height:0;overflow-y:auto;scrollbar-width:thin}.mission-details>*{flex:none}.mission-details>:first-child{margin-top:auto}.mission-details>:last-child{margin-bottom:auto}
+.label-small{font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#b2d7ce;font-weight:850}
+.partner-name{font-size:clamp(23px,5vw,36px);font-weight:900;letter-spacing:-.04em;line-height:1.13;overflow-wrap:anywhere;margin-top:7px}
+.task-box{background:#0e1e2d;border:1px solid #436b65;border-radius:17px;padding:clamp(13px,3vw,20px)}
+.task-text{font-size:clamp(18px,4.1vw,25px);font-weight:750;line-height:1.35;margin:8px 0 0;overflow-wrap:anywhere}
+.mission-mask{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center;color:#deeee8}
+.mission-mask strong{font-size:22px}
+.mission-mask p{font-size:13px;color:var(--muted);margin:0}
+.complete-btn{width:100%;min-height:48px;border-radius:12px;background:#203e36;border:1px solid #679989;color:#a7efd6;font-weight:800}
+.complete-btn.done{background:#8bf0ca;color:#12392d;border-color:transparent}
+.mission-footer{display:grid;grid-template-columns:1fr 1fr;gap:9px;flex:none}
+.mission-footer .btn{padding:9px 10px;font-size:14px}
+.end-icon{width:70px;height:70px;border-radius:22px;display:grid;place-items:center;background:#2d3d51;border:1px solid #71859f;color:#fce0ac;font-size:31px;margin:0 auto}
+.end-note{border:1px solid #425671;background:#202d41;color:#d9e4f3;border-radius:14px;padding:14px;text-align:left;font-size:13px;line-height:1.55}
+.end-note b{color:var(--mint)}
+@media(max-width:550px){.app{gap:10px}.brand-text strong{font-size:14px}.brand-text span{font-size:10px}.top-pill{font-size:11px;padding:7px 8px}.card{padding:13px}.setting-grid{grid-template-columns:1fr;gap:12px}.setting-wide{grid-column:auto}.choice label{min-height:40px}.intro h1{font-size:28px}.intro p{font-size:13px}.section-head{margin-bottom:9px}.settings-footnote{margin-top:9px}.name-choice{min-height:57px;padding:8px}.name-choice .avatar{width:32px;height:34px}.name-choice .name-label{font-size:13px}.clock-card{padding:10px 13px}.stage-head p{font-size:13px}}
+@media(max-width:355px){.brand-text span{display:none}.top-pill{font-size:10px}.name-choice .avatar{display:none}.choice label{font-size:11px;padding:5px 3px}.mission-footer{grid-template-columns:1fr 1fr}.mission-footer .btn{font-size:12px;padding:7px 5px}}
+@media(min-width:700px){.setting-grid{grid-template-columns:1fr 1fr}.setting-wide{grid-column:1/-1}#nameGrid{grid-template-columns:repeat(3,minmax(0,1fr))}.stage-head{text-align:center}.mission-footer{max-width:550px;width:100%;align-self:center}}
+@media(max-height:640px){.mission-privacy{display:none}.mission-card{padding:12px;gap:8px}.mission-layout{gap:7px}.mission-details{gap:8px}.partner-name{font-size:21px;margin-top:4px}.task-box{padding:10px 11px}.task-text{font-size:16px;line-height:1.25;margin-top:5px}.complete-btn{min-height:40px}.mission-footer .btn{min-height:42px}.app{gap:7px;padding-top:8px;padding-bottom:8px}.topbar{min-height:42px}.mark{width:36px;height:36px;border-radius:10px}.card{padding:12px}.stage{gap:8px}.private-wrap{gap:11px}.private-icon,.end-icon{width:48px;height:48px;border-radius:15px;font-size:24px}.btn-big{min-height:47px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important}}
+
+/* Connected rooms: one host, private missions on each player's own phone. */
+.home-panel{max-width:580px;width:100%;margin:auto;display:flex;flex-direction:column;justify-content:center;gap:14px;text-align:center;min-height:0}
+.home-panel h1{font-size:clamp(33px,7vw,50px);line-height:1.05;letter-spacing:-.055em;margin:5px 0 0}
+.home-panel h1 em{color:var(--mint);font-style:normal}
+.home-panel p{color:var(--muted);margin:0;line-height:1.5;font-size:14px}
+.home-actions{display:flex;flex-direction:column;gap:10px;max-width:430px;width:100%;align-self:center}
+.home-actions .btn{min-height:57px}
+.home-panel .home-icon{margin:0 auto;width:76px;height:76px;border:1px solid #7cb7a6;background:linear-gradient(160deg,#365b59,#26384b);border-radius:25px;display:grid;place-items:center;font-size:32px;color:var(--mint)}
+.room-panel{display:flex;gap:13px;align-items:center;padding:13px;background:#192d35;border:1px solid #49766d;border-radius:17px;margin:0 0 13px;min-height:0}
+.room-qr{background:#fff;border-radius:9px;width:136px;height:136px;flex:none;display:grid;place-items:center;padding:6px;overflow:hidden;color:#344}
+.room-qr svg{display:block;width:100%;height:100%}
+.room-content{flex:1;min-width:0;display:flex;flex-direction:column;gap:6px}
+.room-content strong{font-size:14px}
+.room-code{color:var(--mint);letter-spacing:.15em;font-size:clamp(17px,3.4vw,25px);font-weight:900;overflow-wrap:anywhere}
+.room-link{font-size:11px;color:#c4d6e1;overflow-wrap:anywhere;max-height:2.9em;line-height:1.45;overflow:hidden}
+.room-buttons{display:flex;gap:7px;flex-wrap:wrap}
+.room-buttons button{font-size:11px;padding:7px 9px;min-height:32px}
+.room-status{font-size:11px;color:var(--muted);line-height:1.3}
+.connected-badge{font-size:10px;border:1px solid #5c997e;color:#a9f5d4;padding:3px 6px;border-radius:8px;font-weight:750;white-space:nowrap}
+.connected-badge.offline{color:#ffccb2;border-color:#805a51}
+.join-form{width:100%;display:flex;flex-direction:column;gap:11px;text-align:left}
+.join-form label{font-size:13px;font-weight:800;color:#d9e9f2}
+.join-form .name-input{width:100%}
+.status-line{font-size:13px;color:#c6d7e7;min-height:20px;line-height:1.4}
+.status-line.error{color:var(--danger)}
+.remote-layout{flex:1;min-height:0;display:flex;flex-direction:column;gap:12px}
+.remote-header{display:flex;align-items:center;justify-content:space-between;gap:10px;background:#1b2a3e;border:1px solid #455b71;padding:11px 14px;border-radius:14px}
+.remote-header span{color:var(--muted);font-size:12px}
+.remote-header strong{color:var(--mint);font-size:20px;font-variant-numeric:tabular-nums}
+.remote-body{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:17px;text-align:center;max-width:520px;width:100%;margin:0 auto}
+.remote-body h1{font-size:clamp(25px,6vw,35px);letter-spacing:-.04em;margin:0;line-height:1.15;overflow-wrap:anywhere}
+.remote-body p{font-size:14px;color:var(--muted);line-height:1.5;margin:0;overflow-wrap:anywhere}
+.remote-task{background:linear-gradient(160deg,#243d44,#182c3b);border:1px solid #639a91;border-radius:22px;padding:clamp(18px,4vw,28px);display:flex;flex-direction:column;gap:18px;text-align:left}
+.remote-task .task-text{margin:7px 0 0}
+.remote-mask{background:#1a2a3c;border:1px dashed #617c8b;border-radius:20px;padding:25px 15px}
+.remote-hint{font-size:12px!important;color:#a4b8cb!important}
+.hide-menu{min-height:42px}
+#remoteScreen .btn{min-height:48px}
+#remoteNotice{font-size:12px;color:var(--muted);text-align:center}
+@media(max-width:450px){.room-panel{gap:10px}.room-qr{height:112px;width:112px;padding:4px}.room-panel{padding:9px}.room-content{gap:4px}.room-content strong{font-size:12px}.room-status{font-size:10px}.home-panel{gap:12px}}
+@media(max-height:590px){.home-panel{gap:9px}.home-panel .home-icon{width:47px;height:47px;border-radius:14px;font-size:24px}.home-panel h1{font-size:28px}.home-actions .btn{min-height:45px}.remote-body{gap:9px}.remote-task{gap:10px;padding:14px}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="topbar">
+    <div class="brand"><div class="mark" aria-hidden="true">A<span style="color:#fff">/</span>B</div><div class="brand-text"><strong>ALLIANCE BUILDER</strong><span>Small tasks. New teammates.</span></div></div>
+    <div class="top-pill" id="appPill"><span class="dot" aria-hidden="true"></span><span id="appPillText">Offline · ready</span></div>
+  </header>
+  <main>
+
+    <section class="screen" id="welcomeScreen" aria-label="Choose how to play">
+      <div class="home-panel">
+        <div class="home-icon" aria-hidden="true">◈</div>
+        <h1>Temporary teams.<br><em>Real connections.</em></h1>
+        <p>Find your secret teammate, complete one tiny task together, and get reshuffled every round.</p>
+        <div class="home-actions">
+          <button id="hostBtn" class="btn btn-primary btn-big" type="button">Host a live room · QR join</button>
+          <button id="joinBtn" class="btn btn-secondary btn-big" type="button">Join someone's room</button>
+          <button id="offlineBtn" class="btn btn-outline" type="button">Play together on one device (offline)</button>
+        </div>
+        <p class="remote-hint">Online rooms use WebRTC connections; local pass-the-phone play works offline.</p>
+      </div>
+    </section>
+    <section class="screen" id="joinScreen" aria-label="Join a game" hidden>
+      <div class="home-panel">
+        <div class="home-icon" aria-hidden="true">↔</div>
+        <h1>Join your <em>alliance.</em></h1>
+        <p>Scan your host's QR code or enter the room code, then add your own real name.</p>
+        <form id="joinForm" class="join-form" autocomplete="off">
+          <label for="joinCode">Room code</label>
+          <input id="joinCode" class="name-input" type="text" maxlength="16" placeholder="Room code" required autocapitalize="characters" spellcheck="false">
+          <label for="joinName">Your real name</label>
+          <input id="joinName" class="name-input" type="text" maxlength="40" placeholder="Type your real name" required autocomplete="name">
+          <button id="joinSubmit" class="btn btn-primary btn-big" type="submit">Join room</button>
+        </form>
+        <p id="joinStatus" class="status-line" role="status" aria-live="polite"></p>
+        <button id="joinBackBtn" type="button" class="mini-btn">Back to start</button>
+      </div>
+    </section>
+    <section class="screen" id="remoteScreen" aria-label="Your private game screen" hidden>
+      <div class="remote-layout">
+        <div class="remote-header"><div><div class="eyebrow" id="remoteRound">WAITING FOR HOST</div><span id="remotePlayer">Your phone</span></div><strong id="remoteClock">--:--</strong></div>
+        <div class="remote-body" id="remoteBody" aria-live="polite"></div>
+        <div id="remoteNotice" role="status"></div><button id="guestLeaveBtn" class="mini-btn" type="button">Leave room</button>
+      </div>
+    </section>
+    <section class="screen" id="setupScreen" aria-label="Set up your game">
+      <div class="scroll-area" id="setupScroll">
+
+        <div id="roomPanel" class="room-panel" hidden>
+          <div class="room-qr" id="qrTarget" aria-label="Scan QR code to join">Preparing QR…</div>
+          <div class="room-content"><strong>Scan to join on a phone</strong><div id="roomCode" class="room-code"></div><div id="roomLink" class="room-link"></div>
+            <div class="room-buttons"><button type="button" id="copyLinkBtn" class="btn btn-secondary">Copy link</button><button type="button" id="shareLinkBtn" class="btn btn-outline">Share</button></div>
+            <span id="roomStatus" class="room-status" role="status">Opening room…</span>
+          </div>
+        </div>
+        <div class="intro"><h1>Better together.<br><em>Just for a round.</em></h1><p>Add your group, pick a pace, and get secretly matched with a teammate for one quick shared task.</p></div>
+        <div class="card">
+          <div class="section-head"><h2>Who's playing?</h2><span class="count" id="playerCount">0 players</span></div>
+          <form class="add-form" id="addForm" autocomplete="off">
+            <input class="name-input" id="nameInput" type="text" placeholder="Enter a person's real name" aria-label="Player's real name" maxlength="40" spellcheck="false" required>
+            <button class="btn btn-primary" type="submit">Add</button>
+          </form>
+          <p id="nameError" class="field-error" role="alert" hidden></p>
+          <div style="height:11px"></div>
+          <div id="playerChips" aria-label="Current players"><div class="empty" style="width:100%">Nobody added yet. Add the people who are here.</div></div>
+        </div>
+        <div class="card">
+          <div class="section-head"><h2>Round settings</h2></div>
+          <div class="setting-grid">
+            <fieldset class="setting"><legend>Time limit</legend><div class="choice-row" style="--items:4">
+              <div class="choice"><input type="radio" name="duration" id="d90" value="90"><label for="d90">90 sec</label></div>
+              <div class="choice"><input type="radio" name="duration" id="d120" value="120" checked><label for="d120">2 min</label></div>
+              <div class="choice"><input type="radio" name="duration" id="d180" value="180"><label for="d180">3 min</label></div>
+              <div class="choice"><input type="radio" name="duration" id="d300" value="300"><label for="d300">5 min</label></div>
+            </div></fieldset>
+            <fieldset class="setting"><legend>Odd number of players</legend><div class="choice-row" style="--items:2">
+              <div class="choice"><input type="radio" name="odd" id="oddSit" value="sitout" checked><label for="oddSit">One sits out</label></div>
+              <div class="choice"><input type="radio" name="odd" id="oddTrio" value="trio"><label for="oddTrio">One trio</label></div>
+            </div></fieldset>
+            <fieldset class="setting setting-wide"><legend>Task style</legend><div class="choice-row" style="--items:4">
+              <div class="choice"><input type="radio" name="style" id="sMixed" value="mixed" checked><label for="sMixed">Mixed</label></div>
+              <div class="choice"><input type="radio" name="style" id="sTalk" value="conversation"><label for="sTalk">Conversation</label></div>
+              <div class="choice"><input type="radio" name="style" id="sMove" value="physical"><label for="sMove">Physical-light</label></div>
+              <div class="choice"><input type="radio" name="style" id="sCreate" value="creative"><label for="sCreate">Creative</label></div>
+            </div></fieldset>
+          </div>
+          <div class="settings-footnote">Minimum 4 players. Online: players join using the QR code. You can also add names for people sharing the host screen. Physical tasks should suit everyone's comfort and ability.</div>
+        </div>
+      </div>
+      <div class="setup-footer"><button id="startBtn" type="button" class="btn btn-primary btn-big" disabled>Start round <span aria-hidden="true">→</span></button><div class="footer-hint" id="setupHint">Add at least 4 players to begin.</div><button type="button" class="mini-btn" id="leaveHostBtn">Back to start</button></div>
+    </section>
+
+    <section class="screen" id="gameScreen" aria-label="Current round" hidden>
+      <div class="play-head">
+        <div class="clock-card"><div class="clock-left"><span class="eyebrow">Time remaining</span><strong id="timerDisplay" role="timer" aria-live="off">02:00</strong></div><div class="clock-right"><strong id="roundLabel">Round 1</strong><span id="roundSub">Private missions</span></div></div>
+      </div>
+      <div class="progress-track" aria-hidden="true"><div id="progressBar"></div></div>
+
+      <div class="stage" id="selectStage" hidden>
+        <div class="stage-head"><h1>Tap your name.</h1><p>Joined players reveal missions on their own phones. For anyone sharing this screen, tap their name privately.</p></div>
+        <div class="announcement" id="sitoutBanner" hidden><span aria-hidden="true">◌</span><span id="sitoutText"></span></div>
+        <div class="announcement" id="trioBanner" hidden><span aria-hidden="true">◈</span><span>One alliance has three teammates this round.</span></div>
+        <div id="nameGrid" aria-label="Choose your name"></div>
+        <div class="stage-bottom"><p class="privacy-note">Use “Hide &amp; pass” before giving the phone to someone else.</p><button class="mini-btn" type="button" id="endEarlyBtn">End round</button></div>
+      </div>
+
+      <div class="stage" id="readyStage" hidden>
+        <div class="private-wrap">
+          <div class="private-icon" id="readyIcon" aria-hidden="true">◈</div>
+          <div><span class="eyebrow" id="readyEyebrow">PRIVATE REVEAL</span><h1 id="readyTitle" style="margin-top:9px"></h1></div>
+          <p id="readyCopy">Make sure only you can see the screen before revealing.</p>
+          <div class="private-buttons"><button type="button" class="btn btn-primary btn-big" id="revealBtn">Reveal my alliance</button><button type="button" class="btn btn-outline" id="readyBackBtn">Back to names</button></div>
+        </div>
+      </div>
+
+      <div class="stage" id="allianceStage" hidden>
+        <div class="mission-layout">
+          <div class="mission-card">
+            <div class="mission-top"><small id="viewingName">Your private alliance</small><button id="hideShowBtn" type="button">Hide mission</button></div>
+            <div class="mission-details" id="missionDetails">
+              <div><div class="label-small" id="partnerLabel">Your partner</div><div class="partner-name" id="partnerNames"></div></div>
+              <div class="task-box"><div class="label-small">Your shared task</div><p class="task-text" id="taskText"></p></div>
+              <button class="complete-btn" id="completeBtn" type="button" aria-pressed="false">✓ We did it</button>
+            </div>
+            <div class="mission-mask" id="missionMask" hidden><div class="private-icon" aria-hidden="true" style="width:57px;height:57px;font-size:27px">◈</div><strong>Mission hidden</strong><p>Tap “Show mission” when you're ready to look again.</p></div>
+          </div>
+          <div class="mission-footer"><button class="btn btn-secondary" type="button" id="hidePassBtn">Hide &amp; pass</button><button class="btn btn-outline" type="button" id="allianceNamesBtn">Back to names</button></div>
+          <p class="privacy-note mission-privacy" style="text-align:center">Both teammates receive the exact same task. “We did it” tracks only your own checkmark.</p>
+        </div>
+      </div>
+
+      <div class="stage" id="endedStage" hidden>
+        <div class="private-wrap">
+          <div class="end-icon" aria-hidden="true">⌛</div>
+          <div><span class="eyebrow">ROUND FINISHED</span><h1 style="margin-top:10px">Time's up.</h1></div>
+          <p>All missions are now locked. Alliances dissolve until your next shuffle.</p>
+          <div class="end-note"><b>Want another round?</b> Keep the same people and tap New round for fresh assignments and tasks, or return to setup to change players or settings.</div>
+          <div class="private-buttons"><button class="btn btn-primary btn-big" type="button" id="newRoundBtn">New round <span aria-hidden="true">↻</span></button><button class="btn btn-outline" type="button" id="editPlayersBtn">Edit players / settings</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+<script>
+'use strict';
+
+/* ========================================================
+   EASY-TO-EDIT TASK BANKS
+   Add { duo: '...', trio: '...' } entries below.
+   Each entry is a SINGLE shared task assigned to a team.
+   The trio wording is used only for 3-person alliances.
+   No names are built into the game.
+   ======================================================== */
+const TASK_BANKS = {
+  conversation: [
+    {duo:'Find one thing you both did this week.',trio:'Find one thing all three of you did this week.'},
+    {duo:'Teach each other a useless skill in 60 seconds.',trio:'Each teach the others a useless skill in 60 seconds.'},
+    {duo:'Decide on a fake band name together.',trio:'Decide on a fake band name together.'},
+    {duo:'Each share one unpopular opinion, then find common ground.',trio:'Each share one unpopular opinion, then find common ground.'},
+    {duo:'Find a movie you both genuinely like.',trio:'Find a movie all three of you genuinely like.'},
+    {duo:'Agree on the most underrated snack.',trio:'Agree on the most underrated snack.'},
+    {duo:'Discover one hobby you both want to try.',trio:'Discover one hobby all three of you want to try.'},
+    {duo:'Invent a two-word secret code phrase together.',trio:'Invent a two-word secret code phrase together.'},
+    {duo:'Choose a place you would both visit tomorrow.',trio:'Choose a place all three of you would visit tomorrow.'},
+    {duo:'Each name a childhood game and pick the better one.',trio:'Each name a childhood game and vote on one to bring back.'},
+    {duo:'Agree on the perfect breakfast in one sentence.',trio:'Agree on the perfect breakfast in one sentence.'},
+    {duo:'Find something you have both learned recently.',trio:'Find something all three of you have learned recently.'},
+    {duo:'Pick a song that would play when your team enters a room.',trio:'Pick a song that would play when your team enters a room.'},
+    {duo:'Come up with one harmless rule everyone should follow for a day.',trio:'Come up with one harmless rule everyone should follow for a day.'},
+    {duo:'Trade one surprisingly useful life tip each.',trio:'Trade one surprisingly useful life tip each.'},
+    {duo:'Agree on a nickname for the room you are in.',trio:'Agree on a nickname for the room you are in.'},
+    {duo:'Find one food neither of you has tried but wants to.',trio:'Find one food none of you has tried but wants to.'},
+    {duo:'Pick one superpower and agree on its funniest downside.',trio:'Pick one superpower and agree on its funniest downside.'}
+  ],
+  physical: [
+    {duo:'High-five in a creative way.',trio:'Make a creative three-way high-five.'},
+    {duo:'Both point at the same object at the same moment.',trio:'All three point at the same object at the same moment.'},
+    {duo:'Create a two-person handshake.',trio:'Create a three-person handshake.'},
+    {duo:'Stand back-to-back and each name three things you see.',trio:'Face three different directions and each name three things you see.'},
+    {duo:'Mirror each other’s hand movements for 10 seconds.',trio:'Take turns leading a 10-second hand-movement mirror.'},
+    {duo:'Count down from three and strike matching poses.',trio:'Count down from three and strike matching poses.'},
+    {duo:'Create a silent greeting using only hand gestures.',trio:'Create a silent group greeting using only hand gestures.'},
+    {duo:'Simultaneously tap the same nearby safe surface.',trio:'Simultaneously tap the same nearby safe surface.'},
+    {duo:'Invent a synchronized two-step dance using only arm motions.',trio:'Invent a synchronized two-step dance using only arm motions.'},
+    {duo:'Make the same silly facial expression for five seconds.',trio:'Make the same silly facial expression for five seconds.'},
+    {duo:'Try to clap once at exactly the same moment without counting.',trio:'Try to clap once at exactly the same moment without counting.'},
+    {duo:'Together, mime opening an imaginary giant door.',trio:'Together, mime opening an imaginary giant door.'},
+    {duo:'Make a tiny celebration pose you can repeat together.',trio:'Make a tiny celebration pose you can repeat together.'},
+    {duo:'Take turns leading three slow, simple gestures.',trio:'Take turns leading three slow, simple gestures.'},
+    {duo:'Point to something round, then something square, in sync.',trio:'Point to something round, then something square, in sync.'},
+    {duo:'Try to turn your heads the same way at the same moment.',trio:'Try to turn your heads the same way at the same moment.'},
+    {duo:'Invent a 5-second no-contact victory routine.',trio:'Invent a 5-second no-contact victory routine.'},
+    {duo:'Make matching shapes with your hands.',trio:'Make matching shapes with your hands.'}
+  ],
+  creative: [
+    {duo:'Invent a 10-second greeting or handshake.',trio:'Invent a 10-second group greeting or handshake.'},
+    {duo:'Come up with a team name and a one-sentence motto.',trio:'Come up with a team name and a one-sentence motto.'},
+    {duo:'Draw the same simple shape in the air at the same time.',trio:'Draw the same simple shape in the air at the same time.'},
+    {duo:'Create a short two-person pose and hold it for five seconds.',trio:'Create a short three-person pose and hold it for five seconds.'},
+    {duo:'Make up a one-line slogan for an imaginary product.',trio:'Make up a one-line slogan for an imaginary product.'},
+    {duo:'Invent a fictional holiday and its one required tradition.',trio:'Invent a fictional holiday and its one required tradition.'},
+    {duo:'Give an ordinary object in the room a superhero name.',trio:'Give an ordinary object in the room a superhero name.'},
+    {duo:'Create a two-line story: one line per person.',trio:'Create a three-line story: one line per person.'},
+    {duo:'Invent a new word and agree what it means.',trio:'Invent a new word and agree what it means.'},
+    {duo:'Make up a secret team cheer, spoken quietly.',trio:'Make up a secret team cheer, spoken quietly.'},
+    {duo:'Create an imaginary restaurant and name its signature dish.',trio:'Create an imaginary restaurant and name its signature dish.'},
+    {duo:'Invent an animal by combining two real animals.',trio:'Invent an animal by combining three real animals.'},
+    {duo:'Come up with a funny title for your team’s future autobiography.',trio:'Come up with a funny title for your team’s future autobiography.'},
+    {duo:'Give the room an imaginary movie title and genre.',trio:'Give the room an imaginary movie title and genre.'},
+    {duo:'Design a team logo in the air using gestures.',trio:'Design a team logo in the air using gestures.'},
+    {duo:'Create a dramatic one-sentence movie trailer voice-over.',trio:'Create a dramatic one-sentence movie trailer voice-over.'},
+    {duo:'Invent a ridiculous new Olympic event.',trio:'Invent a ridiculous new Olympic event.'},
+    {duo:'Choose three words that describe your imaginary island.',trio:'Choose three words that describe your imaginary island.'}
+  ]
+};
+
+/* Game state intentionally begins with NO player names or example teams. */
+const state = {
+  players: [], teams: [], sittingOut: null,
+  settings: {duration:120, odd:'sitout', style:'mixed'},
+  phase:'setup', round:0, deadline:0, ticker:null,
+  selectedPlayer:null, concealed:false, completed:new Set(),
+  previousTeams:[], previousSitout:null, recentTaskIds:[],
+  roundTaskIds:[]
+};
+const $ = id => document.getElementById(id);
+const stages = ['selectStage','readyStage','allianceStage','endedStage'];
+let mode = 'home'; // home, local, host, guest
+const live = {peer:null,room:'',joinUrl:'',connections:new Map(),guests:new Map(),ticker:null,joinConn:null,clientToken:null, clientName:'',clientRound:null,clientPhase:'waiting',shown:false,done:false,clientDeadline:0, reconnectTimer:null, hostReady:false};
+function randomInt(max){
+  if(max<=1) return 0;
+  if(window.crypto && window.crypto.getRandomValues){
+    const range=0x100000000, ceiling=range-(range%max), buffer=new Uint32Array(1);
+    do {crypto.getRandomValues(buffer);} while(buffer[0]>=ceiling);
+    return buffer[0]%max;
+  }
+  return Math.floor(Math.random()*max);
+}
+function shuffled(arr){
+  const copy=arr.slice();
+  for(let i=copy.length-1;i>0;i--){const j=randomInt(i+1);[copy[i],copy[j]]=[copy[j],copy[i]];}
+  return copy;
+}
+function setPhase(phase){
+  state.phase=phase;
+  $('welcomeScreen').hidden=true; $('joinScreen').hidden=true; $('remoteScreen').hidden=true;
+  $('setupScreen').hidden=phase!=='setup';
+  $('gameScreen').hidden=phase==='setup';
+  for(const stage of stages) $(stage).hidden=phase!==stage.replace('Stage','');
+  $('appPillText').textContent=mode==='host'?'Live room · '+(live.hostReady?'connected':'connecting'):phase==='setup'?'Offline · ready':phase==='ended'?'Round finished':'Offline · in progress';
+  if(phase!=='setup') updateTimer();
+}
+function addPlayer(raw){
+  const name=raw.replace(/\s+/g,' ').trim();
+  if(!name){showNameError('Enter a name first.');return false;}
+  if([...name].length>40){showNameError('Please keep each name to 40 characters or fewer.');return false;}
+  if(state.players.some(p=>p.toLocaleLowerCase()===name.toLocaleLowerCase())){showNameError('That name is already in the group. Add a distinct name.');return false;}
+  if(state.players.length>=100){showNameError('This game supports up to 100 people.');return false;}
+  state.players.push(name);
+  showNameError('');renderPlayers();if(mode==='host') broadcastLobby();return true;
+}
+function showNameError(message){$('nameError').textContent=message;$('nameError').hidden=!message;}
+function renderPlayers(){
+  const list=$('playerChips');list.replaceChildren();
+  if(!state.players.length){const div=document.createElement('div');div.className='empty';div.style.width='100%';div.textContent='Nobody added yet. Add the people who are here.';list.append(div);}
+  else for(const [i,name] of state.players.entries()){
+    const chip=document.createElement('div');chip.className='chip';
+    const label=document.createElement('span');label.className='chip-name';label.textContent=name;label.title=name;
+    const remove=document.createElement('button');remove.type='button';remove.textContent='×';remove.setAttribute('aria-label',`Remove ${name}`);
+    remove.addEventListener('click',()=>{if(mode==='host') kickPlayer(name);state.players.splice(i,1);showNameError('');renderPlayers();if(mode==='host')broadcastLobby();});
+    chip.append(label);if(mode==='host' && live.guests.has(name)){const badge=document.createElement('span');badge.className='connected-badge'+(live.guests.get(name).conn?.open?'':' offline');badge.textContent=live.guests.get(name).conn?.open?'Phone':'Offline';chip.append(badge);}chip.append(remove);list.append(chip);
+  }
+  $('playerCount').textContent=`${state.players.length} ${state.players.length===1?'player':'players'}`;
+  $('startBtn').disabled=state.players.length<4||(mode==='host'&&!live.hostReady);
+  $('setupHint').textContent=state.players.length<4?`Add ${4-state.players.length} more ${4-state.players.length===1?'player':'players'} to begin.`:`${state.players.length} real players · ${state.settings.duration===90?'90 seconds':state.settings.duration/60+' minutes'} per round`;
+}
+function pairKey(a,b){return [a,b].sort((x,y)=>x.localeCompare(y)).join('\u0000');}
+function allPairs(teams){
+  const pairs=new Set();
+  for(const t of teams) for(let i=0;i<t.members.length;i++)for(let j=i+1;j<t.members.length;j++)pairs.add(pairKey(t.members[i],t.members[j]));
+  return pairs;
+}
+function makeCandidate(){
+  const names=shuffled(state.players);
+  let sit=null;
+  if(names.length%2 && state.settings.odd==='sitout')sit=names.pop();
+  const groups=[];
+  if(names.length%2){groups.push(names.splice(0,3));}
+  while(names.length) groups.push(names.splice(0,2));
+  return {groups:shuffled(groups),sit};
+}
+function createPairings(){
+  const previousPairs=allPairs(state.previousTeams);
+  let best=null,score=-Infinity;
+  // Explore multiple real random shuffles. Prefer fresh partner combinations when possible.
+  for(let attempt=0;attempt<Math.min(400,50+state.players.length*20);attempt++){
+    const candidate=makeCandidate();
+    let value=randomInt(1000)/1000;
+    for(const members of candidate.groups){
+      for(let i=0;i<members.length;i++)for(let j=i+1;j<members.length;j++){
+        if(previousPairs.has(pairKey(members[i],members[j])))value-=100;
+      }
+      if(members.length===3){
+        const prev=state.previousTeams.some(t=>t.members.length===3 && members.every(m=>t.members.includes(m)));
+        if(prev)value-=150;
+      }
+    }
+    if(candidate.sit && candidate.sit===state.previousSitout)value-=150;
+    if(value>score){score=value;best=candidate;}
+    if(value>=0 && attempt>=25)break;
+  }
+  return best;
+}
+function taskOptions(){
+  const styles=state.settings.style==='mixed'?['conversation','physical','creative']:[state.settings.style];
+  return styles.flatMap(style=>TASK_BANKS[style].map((task,i)=>({id:style+':'+i,duo:task.duo,trio:task.trio})));
+}
+function assignTask(members,usedNow){
+  const pool=taskOptions();
+  let choices=pool.filter(t=>!usedNow.has(t.id)&&!state.recentTaskIds.includes(t.id));
+  if(!choices.length)choices=pool.filter(t=>!usedNow.has(t.id));
+  if(!choices.length)choices=pool;
+  const choice=choices[randomInt(choices.length)];
+  usedNow.add(choice.id);
+  return {text:members.length===3?choice.trio:choice.duo,id:choice.id};
+}
+function startRound(){
+  if(state.players.length<4)return;
+  stopTicker();
+  const candidate=createPairings();
+  const usedNow=new Set();
+  const teams=candidate.groups.map((members,i)=>{
+    const task=assignTask(members,usedNow);
+    return {id:i+1,members:members.slice(),task:task.text,taskId:task.id};
+  });
+  state.teams=teams;
+  state.sittingOut=candidate.sit;
+  state.roundTaskIds=Array.from(usedNow);
+  state.recentTaskIds=[...state.roundTaskIds,...state.recentTaskIds].slice(0,Math.max(12,teams.length*3));
+  state.completed.clear();state.selectedPlayer=null;state.concealed=false;
+  state.round++;
+  state.deadline=Date.now()+state.settings.duration*1000;
+  $('roundLabel').textContent=`Round ${state.round}`;
+  $('roundSub').textContent=`${state.teams.length} ${state.teams.length===1?'alliance':'alliances'}`;
+  renderSelect();setPhase('select');
+  state.ticker=setInterval(updateTimer,200);
+  if(mode==='host')broadcastRound();
+}
+function newRound(){
+  if(state.phase!=='ended')return;
+  // `state.previousTeams` must refer to the round just completed.
+  state.previousTeams=state.teams.map(t=>({members:t.members.slice()}));
+  state.previousSitout=state.sittingOut;
+  startRound();
+}
+function stopTicker(){if(state.ticker!==null){clearInterval(state.ticker);state.ticker=null;}}
+function secondsLeft(){return Math.max(0,Math.ceil((state.deadline-Date.now())/1000));}
+function updateTimer(){
+  if(state.phase==='setup')return;
+  const secs=state.phase==='ended'?0:secondsLeft();
+  $('timerDisplay').textContent=`${String(Math.floor(secs/60)).padStart(2,'0')}:${String(secs%60).padStart(2,'0')}`;
+  $('timerDisplay').classList.toggle('urgent',secs<=15);
+  $('progressBar').style.width=(secs/state.settings.duration*100)+'%';
+  if(secs===0 && state.phase!=='ended')endRound();
+}
+function endRound(){
+  if(state.phase==='setup'||state.phase==='ended')return;
+  stopTicker();
+  state.selectedPlayer=null;state.concealed=true;
+  setPhase('ended');
+  if(mode==='host')hostSendAll({type:'ended',round:state.round});
+}
+function renderSelect(){
+  const list=$('nameGrid');list.replaceChildren();
+  $('sitoutBanner').hidden=!state.sittingOut;
+  $('trioBanner').hidden=!(state.players.length%2===1 && state.settings.odd==='trio');
+  $('sitoutText').textContent=state.sittingOut?`${state.sittingOut} is sitting out this round.`:'';
+  for(const name of state.players){
+    const sitting=name===state.sittingOut;
+    const btn=document.createElement('button');btn.type='button';btn.className='name-choice'+(sitting?' is-out':'');
+    const avatar=document.createElement('div');avatar.className='avatar';avatar.setAttribute('aria-hidden','true');avatar.textContent=(Array.from(name)[0]||'?').toLocaleUpperCase();
+    const content=document.createElement('div');content.className='name-content';
+    const label=document.createElement('span');label.className='name-label';label.textContent=name;
+    content.append(label);
+    if(sitting){const note=document.createElement('span');note.className='small-label';note.textContent='Sitting out';content.append(note);}
+    const chevron=document.createElement('span');chevron.className='chev';chevron.setAttribute('aria-hidden','true');chevron.textContent='›';
+    btn.append(avatar,content,chevron);
+    btn.addEventListener('click',()=>selectName(name));list.append(btn);
+  }
+}
+function selectName(name){
+  if(!checkActive())return;
+  if(!state.players.includes(name))return;
+  state.selectedPlayer=name;
+  const sitting=name===state.sittingOut;
+  $('readyEyebrow').textContent=sitting?'REST ROUND':'PRIVATE REVEAL';
+  $('readyIcon').textContent=sitting?'◌':'◈';
+  $('readyTitle').textContent=sitting?`${name}, you’re sitting out.`:`Ready, ${name}?`;
+  $('readyCopy').textContent=sitting?'You have no partner or task this round. You can join again on the next shuffle.':'Make sure only you can see the phone. Your partner and shared task appear on the next screen.';
+  $('revealBtn').textContent=sitting?'Back to name list':'Reveal my alliance';
+  setPhase('ready');
+}
+function checkActive(){if(state.phase==='setup'||state.phase==='ended')return false;if(secondsLeft()<=0){endRound();return false;}return true;}
+function reveal(){
+  if(!checkActive())return;
+  if(!state.selectedPlayer)return;
+  if(state.selectedPlayer===state.sittingOut){backToNames();return;}
+  const team=state.teams.find(t=>t.members.includes(state.selectedPlayer));
+  if(!team)return;
+  const partners=team.members.filter(p=>p!==state.selectedPlayer);
+  $('viewingName').textContent=`Only for ${state.selectedPlayer}`;
+  $('partnerLabel').textContent=partners.length===1?'Your partner':'Your partners';
+  $('partnerNames').textContent=partners.join(' & ');
+  $('taskText').textContent=team.task;
+  state.concealed=false;
+  renderMissionVisibility();setPhase('alliance');
+}
+function renderMissionVisibility(){
+  $('missionDetails').hidden=state.concealed;
+  $('missionMask').hidden=!state.concealed;
+  $('hideShowBtn').textContent=state.concealed?'Show mission':'Hide mission';
+  const done=state.completed.has(state.selectedPlayer);
+  $('completeBtn').classList.toggle('done',done);
+  $('completeBtn').textContent=done?'✓ Marked done (undo)':'✓ We did it';
+  $('completeBtn').setAttribute('aria-pressed',String(done));
+}
+function backToNames(){
+  if(!checkActive())return;
+  state.concealed=true;
+  $('missionDetails').hidden=true;
+  $('missionMask').hidden=false;
+  $('partnerNames').textContent='';$('taskText').textContent='';
+  state.selectedPlayer=null;
+  setPhase('select');
+}
+function editPlayers(){
+  stopTicker();state.selectedPlayer=null;state.concealed=true;
+  state.teams=[];state.sittingOut=null;state.previousTeams=[];state.previousSitout=null;
+  state.recentTaskIds=[];state.roundTaskIds=[];state.completed.clear();state.round=0;state.deadline=0;
+  showNameError('');renderPlayers();setPhase('setup');if(mode==='host')broadcastLobby();
+}
+$('addForm').addEventListener('submit',event=>{
+  event.preventDefault();
+  if(addPlayer($('nameInput').value)){$('nameInput').value='';$('nameInput').focus();}
+});
+document.querySelectorAll('input[type="radio"]').forEach(el=>el.addEventListener('change',()=>{
+  if(!el.checked)return;
+  if(el.name==='duration')state.settings.duration=Number(el.value);
+  else state.settings[el.name]=el.value;
+  renderPlayers(); if(mode==='host')broadcastLobby();
+}));
+$('startBtn').addEventListener('click',startRound);
+$('revealBtn').addEventListener('click',reveal);
+$('readyBackBtn').addEventListener('click',backToNames);
+$('hideShowBtn').addEventListener('click',()=>{
+  if(!checkActive())return;
+  state.concealed=!state.concealed;renderMissionVisibility();
+});
+$('completeBtn').addEventListener('click',()=>{
+  if(!checkActive()||state.concealed||!state.selectedPlayer)return;
+  if(state.completed.has(state.selectedPlayer))state.completed.delete(state.selectedPlayer);
+  else state.completed.add(state.selectedPlayer);
+  renderMissionVisibility();
+});
+$('hidePassBtn').addEventListener('click',backToNames);
+$('allianceNamesBtn').addEventListener('click',backToNames);
+$('endEarlyBtn').addEventListener('click',()=>{
+  if(checkActive()&&window.confirm('End this round now? Everyone’s missions will lock.'))endRound();
+});
+$('newRoundBtn').addEventListener('click',newRound);
+$('editPlayersBtn').addEventListener('click',editPlayers);
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)updateTimer();});
+window.addEventListener('focus',updateTimer);
+/* ================================================================
+   LIVE ROOMS (WebRTC / PeerJS). A host is authoritative.
+   Other players receive ONLY their own partner and task.
+   Offline, shared-phone mode does not load any remote libraries.
+   ================================================================ */
+const PEER_SCRIPTS = [
+  'https://cdn.jsdelivr.net/npm/peerjs@1.5.5/dist/peerjs.min.js',
+  'https://cdnjs.cloudflare.com/ajax/libs/peerjs/1.5.5/peerjs.min.js'
+];
+const QR_SCRIPTS = [
+  'https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js',
+  'https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js'
+];
+let peerLibrary = null, qrLibrary = null;
+function loadOneScript(url) {
+  return new Promise((resolve, reject) => {
+    const el=document.createElement('script');el.src=url;el.async=true;el.referrerPolicy='no-referrer';
+    const guard=setTimeout(()=>{el.remove();reject(new Error('Timed out loading network library'));},8500);
+    el.onload=()=>{clearTimeout(guard);resolve();};
+    el.onerror=()=>{clearTimeout(guard);el.remove();reject(new Error('Could not download network library'));};
+    document.head.appendChild(el);
+  });
+}
+async function ensureScript(which) {
+  const isPeer=which==='peer';
+  if(isPeer && typeof window.Peer==='function') return;
+  if(!isPeer && typeof window.qrcode==='function') return;
+  const existing=isPeer?peerLibrary:qrLibrary;
+  if(existing)return existing;
+  const promise=(async()=>{
+    for(const url of (isPeer?PEER_SCRIPTS:QR_SCRIPTS)){
+      try{await loadOneScript(url);if(typeof window[isPeer?'Peer':'qrcode']==='function')return;}
+      catch(e){console.warn('Trying an alternate library source',e.message);}
+    }
+    throw Error('Online library unavailable. Check the internet connection or try again.');
+  })();
+  if(isPeer)peerLibrary=promise;else qrLibrary=promise;
+  try{await promise;}catch(e){if(isPeer)peerLibrary=null;else qrLibrary=null;throw e;}
+}
+function newRoomCode(){
+  // 60 bits of cryptographically random entropy, hard to guess.
+  const alphabet='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const bytes=new Uint8Array(12);crypto.getRandomValues(bytes);
+  return Array.from(bytes,b=>alphabet[b%alphabet.length]).join('');
+}
+function newToken(){const bytes=new Uint8Array(16);crypto.getRandomValues(bytes);return Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');}
+function normalizedName(input){return String(input||'').replace(/\s+/g,' ').trim().slice(0,40);}
+function roomUrl(room){
+  const base=location.protocol==='file:'?'https://tbenitz.github.io/alliance-builder/':location.href;
+  const url=new URL(base);url.search='';url.hash='';url.searchParams.set('room',room);
+  return url.href;
+}
+function showHome(){
+  mode='home';stopTicker();$('setupScreen').hidden=true;$('gameScreen').hidden=true;
+  $('joinScreen').hidden=true;$('remoteScreen').hidden=true;$('welcomeScreen').hidden=false;
+  $('appPillText').textContent='Choose game mode';
+}
+function showJoinScreen(room=''){
+  stopTicker();mode='join';$('welcomeScreen').hidden=true;$('setupScreen').hidden=true;
+  $('gameScreen').hidden=true;$('remoteScreen').hidden=true;$('joinScreen').hidden=false;
+  $('appPillText').textContent='Join by code';
+  $('joinCode').value=(room||'').toUpperCase();
+  $('joinStatus').textContent='';$('joinStatus').classList.remove('error');
+  (room?$('joinName'):$('joinCode')).focus();
+}
+function leaveRoom(){
+  stopTicker();if(live.ticker){clearInterval(live.ticker);live.ticker=null;}
+  if(live.reconnectTimer){clearTimeout(live.reconnectTimer);live.reconnectTimer=null;}
+  if(live.peer){try{live.peer.destroy();}catch(e){} live.peer=null;}
+  live.connections.clear();live.guests.clear();live.joinConn=null;live.clientRound=null;
+  live.hostReady=false;live.room='';live.clientName='';live.clientPhase='waiting';
+  $('roomPanel').hidden=true;
+  if(location.search.includes('room='))try{history.replaceState(null,'',location.pathname+location.hash);}catch(e){}
+  state.players=[];state.teams=[];state.round=0;state.previousTeams=[];state.previousSitout=null;
+  state.recentTaskIds=[];state.completed.clear();state.sittingOut=null;
+  showHome();renderPlayers();
+}
+function startOffline(){
+  mode='local';state.players=[];state.teams=[];state.round=0;state.previousTeams=[];
+  state.previousSitout=null;state.recentTaskIds=[];state.completed.clear();
+  $('roomPanel').hidden=true;$('leaveHostBtn').textContent='Back to start';renderPlayers();setPhase('setup');
+  $('appPillText').textContent='Offline · pass the phone';
+}
+async function startLiveHost(){
+  mode='host';state.players=[];state.teams=[];state.round=0;state.previousTeams=[];
+  state.previousSitout=null;state.recentTaskIds=[];state.completed.clear();
+  live.room=newRoomCode();live.hostReady=false;live.joinUrl=roomUrl(live.room);
+  $('roomPanel').hidden=false;$('leaveHostBtn').textContent='Close room / back to start';renderPlayers();setPhase('setup');
+  $('roomStatus').textContent='Connecting to the matchmaking service…';
+  updateRoomPanel();
+  ensureScript('qr').then(drawRoomQR).catch(()=>{
+    $('qrTarget').textContent='QR unavailable — use Copy link';
+  });
+  try{await ensureScript('peer');}
+  catch(e){$('roomStatus').textContent='Could not start the room. Internet is needed for phone joining. '+e.message;return;}
+  if(mode!=='host')return;
+  openHostPeer();
+}
+function updateRoomPanel(){
+  $('roomCode').textContent=live.room;
+  $('roomLink').textContent=live.joinUrl;
+}
+function drawRoomQR(){
+  if(mode!=='host'||!live.joinUrl||typeof window.qrcode!=='function')return;
+  const svgRoot=$('qrTarget');svgRoot.replaceChildren();
+  try{
+    const qr=window.qrcode(0,'M');qr.addData(live.joinUrl);qr.make();
+    const count=qr.getModuleCount(),quiet=4,total=count+quiet*2;
+    const ns='http://www.w3.org/2000/svg';
+    const svg=document.createElementNS(ns,'svg');svg.setAttribute('viewBox',`0 0 ${total} ${total}`);
+    svg.setAttribute('aria-label','Scan to join Alliance Builder');
+    const bg=document.createElementNS(ns,'rect');bg.setAttribute('width',total);bg.setAttribute('height',total);bg.setAttribute('fill','#ffffff');svg.append(bg);
+    // Compact paths keep the QR sharp and legible in screenshots and on phones.
+    const paths=[];
+    for(let r=0;r<count;r++)for(let c=0;c<count;c++)if(qr.isDark(r,c))paths.push(`M${c+quiet} ${r+quiet}h1v1h-1z`);
+    const marks=document.createElementNS(ns,'path');marks.setAttribute('d',paths.join(''));marks.setAttribute('fill','#101622');svg.append(marks);svgRoot.append(svg);
+  }catch(e){svgRoot.textContent='QR unavailable — copy link';}
+}
+function peerErrorMessage(err){
+  const type=String(err?.type||'');
+  if(type==='unavailable-id')return 'Room code collision. Create another room.';
+  if(type==='peer-unavailable')return 'Room not found. Check the code or ask your host to reopen the room.';
+  if(type==='network'||type==='server-error'||type==='socket-error')return 'PeerJS server could not be reached. Check connection and retry.';
+  return String(err?.message||'Connection failed. Please try again.');
+}
+function openHostPeer(){
+  if(live.peer)try{live.peer.destroy();}catch(e){}
+  const room=live.room;
+  const peer=new Peer('alliance-builder-'+room,{debug:0});live.peer=peer;
+  peer.on('open',()=>{
+    if(mode!=='host'||live.peer!==peer)return;
+    live.hostReady=true;
+    $('roomStatus').textContent='Room is live · players can scan now';
+    renderPlayers();setPhase('setup');
+  });
+  peer.on('connection',conn=>{
+    if(mode!=='host'){try{conn.close();}catch(e){}return;}
+    let playerName=null;
+    conn.on('data',m=>{
+      if(!m||typeof m!=='object')return;
+      if(!playerName && m.type==='join'){
+        playerName=acceptJoin(conn,m);
+      }else if(playerName && m.type==='ping'){
+        sendTo(conn,{type:'pong',ms:Date.now()});
+      }
+    });
+    conn.on('close',()=>{
+      live.connections.delete(conn);
+      if(playerName && live.guests.get(playerName)?.conn===conn)live.guests.get(playerName).conn=null;
+      if(mode==='host'){renderPlayers();broadcastLobby();}
+    });
+    conn.on('error',()=>{try{conn.close();}catch(e){}});
+  });
+  peer.on('disconnected',()=>{
+    if(mode==='host'&&live.peer===peer){$('roomStatus').textContent='Signaling disconnected · attempting to reconnect…';try{peer.reconnect();}catch(e){}}
+  });
+  peer.on('error',e=>{
+    if(mode!=='host'||live.peer!==peer)return;
+    live.hostReady=false;renderPlayers();
+    $('roomStatus').textContent=peerErrorMessage(e);
+  });
+}
+function sendTo(conn,data){if(conn&&conn.open)try{conn.send(data);}catch(e){console.warn('Failed to send message',e);}}
+function hostSendAll(data){if(mode!=='host')return;for(const conn of live.connections.keys())sendTo(conn,data);}
+function broadcastLobby(){
+  if(mode!=='host'||state.phase!=='setup')return;
+  hostSendAll({type:'lobby',playerCount:state.players.length,minimum:4});
+}
+function kickPlayer(name){
+  const record=live.guests.get(name);if(!record)return;
+  sendTo(record.conn,{type:'removed',message:'The host removed you from this lobby.'});
+  if(record.conn)try{record.conn.close();}catch(e){}
+  live.guests.delete(name);
+}
+function acceptJoin(conn,m){
+  if(mode!=='host'||!live.hostReady)return null;
+  const name=normalizedName(m.name);
+  const token=String(m.token||'');
+  if(!name||name.length>40||!/^[a-f0-9]{32}$/.test(token)){
+    sendTo(conn,{type:'rejected',reason:'Enter your real name and try again.'});return null;
+  }
+  const match=state.players.find(p=>p.toLocaleLowerCase()===name.toLocaleLowerCase());
+  const chosen=match||name;
+  const known=live.guests.get(chosen);
+  if(known && known.token!==token){sendTo(conn,{type:'rejected',reason:'That name is already taken. Use your own distinct name.'});return null;}
+  if(state.phase!=='setup'&&!known){sendTo(conn,{type:'rejected',reason:'A round is in progress. Ask the host to return to player setup.'});return null;}
+  if(!match && state.players.length>=100){sendTo(conn,{type:'rejected',reason:'The room is full.'});return null;}
+  if(!match)state.players.push(chosen);
+  if(known?.conn&&known.conn!==conn)try{known.conn.close();}catch(e){}
+  live.guests.set(chosen,{token,conn});live.connections.set(conn,chosen);
+  sendTo(conn,{type:'joined',name:chosen,round:state.round});
+  if(state.phase==='setup')sendTo(conn,{type:'lobby',playerCount:state.players.length,minimum:4});
+  else if(state.phase==='ended')sendTo(conn,{type:'ended',round:state.round});
+  else sendPersonalRound(conn,chosen);
+  renderPlayers();broadcastLobby();
+  return chosen;
+}
+function sendPersonalRound(conn,name){
+  const team=state.teams.find(t=>t.members.includes(name));
+  const isOut=name===state.sittingOut;
+  if(!team&&!isOut)return;
+  const ms=Math.max(0,state.deadline-Date.now());
+  sendTo(conn,{
+    type:'round',round:state.round,duration:state.settings.duration,remainingMs:ms,
+    sittingOut:isOut,partners:team?team.members.filter(p=>p!==name):[],
+    task:team?team.task:null
+  });
+}
+function broadcastRound(){
+  if(mode!=='host')return;
+  for(const [conn,name] of live.connections)sendPersonalRound(conn,name);
+}
+function clientStatus(message,error=false){$('joinStatus').textContent=message;$('joinStatus').classList.toggle('error',error);}
+function clearJoinAttempt(){
+  if(live.peer)try{live.peer.destroy();}catch(e){}
+  live.peer=null;live.joinConn=null;
+  $('joinSubmit').disabled=false;$('joinSubmit').textContent='Join room';
+}
+async function attemptJoin(event){
+  if(event)event.preventDefault();
+  if(mode==='guest')return;
+  const room=$('joinCode').value.replace(/[^A-Z2-9]/gi,'').toUpperCase();
+  const name=normalizedName($('joinName').value);
+  if(!/^[A-Z2-9]{12}$/.test(room)){clientStatus('Enter a valid 12-character room code.',true);return;}
+  if(!name){clientStatus('Enter your real name first.',true);return;}
+  $('joinCode').value=room;$('joinName').value=name;
+  $('joinSubmit').disabled=true;$('joinSubmit').textContent='Connecting…';
+  clientStatus('Connecting to the host…');
+  let token;
+  try{
+    const key='ab-token-'+room+'-'+name.toLocaleLowerCase();
+    token=sessionStorage.getItem(key);
+    if(!token||!/^[a-f0-9]{32}$/.test(token)){token=newToken();sessionStorage.setItem(key,token);}
+  }catch(e){token=newToken();}
+  live.clientToken=token;live.room=room;live.clientName=name;
+  try{await ensureScript('peer');}
+  catch(e){clientStatus(e.message,true);$('joinSubmit').disabled=false;$('joinSubmit').textContent='Join room';return;}
+  if(mode!=='join')return;
+  const peer=new Peer(undefined,{debug:0});live.peer=peer;
+  let complete=false;
+  const watchdog=setTimeout(()=>{
+    if(!complete&&mode==='join'&&live.peer===peer){clientStatus('Host did not answer. Verify the room code, and try again.',true);clearJoinAttempt();}
+  },16000);
+  peer.on('open',()=>{
+    if(mode!=='join'||live.peer!==peer)return;
+    const conn=peer.connect('alliance-builder-'+room,{reliable:true,serialization:'json'});
+    live.joinConn=conn;
+    conn.on('open',()=>{clientStatus('Connected. Signing in…');sendTo(conn,{type:'join',name,token});});
+    conn.on('data',message=>{
+      if(!message||typeof message!=='object')return;
+      if(message.type==='rejected'){
+        clearTimeout(watchdog);clientStatus(message.reason||'Unable to join.',true);clearJoinAttempt();return;
+      }
+      if(message.type==='joined'){
+        complete=true;clearTimeout(watchdog);
+        mode='guest';live.clientName=message.name;
+        $('joinSubmit').disabled=false;$('joinSubmit').textContent='Join room';
+        live.clientPhase='waiting';live.clientRound=null;
+        $('joinScreen').hidden=true;$('remoteScreen').hidden=false;
+        $('appPillText').textContent='Connected · private phone';
+        renderRemote();return;
+      }
+      if(mode==='guest')handleGuestMessage(message);
+    });
+    conn.on('close',()=>{
+      clearTimeout(watchdog);
+      if(mode==='join'&&!complete){clientStatus('Connection closed before joining. Try again.',true);clearJoinAttempt();}
+      else if(mode==='guest'){live.clientPhase='disconnected';renderRemote();}
+    });
+    conn.on('error',e=>{
+      if(mode==='join'&&!complete){clearTimeout(watchdog);clientStatus(peerErrorMessage(e),true);clearJoinAttempt();}
+    });
+  });
+  peer.on('error',e=>{
+    clearTimeout(watchdog);
+    if(mode==='join'&&!complete){clientStatus(peerErrorMessage(e),true);clearJoinAttempt();}
+    else if(mode==='guest'){live.clientPhase='disconnected';renderRemote();}
+  });
+  peer.on('disconnected',()=>{if(mode==='guest'){try{peer.reconnect();}catch(e){}}});
+}
+function handleGuestMessage(message){
+  if(message.type==='removed'){
+    live.clientPhase='disconnected';live.clientRound=null;renderRemote();
+    $('remoteNotice').textContent=message.message||'The host removed you.';
+  }
+  if(message.type==='lobby'){
+    live.clientPhase='waiting';live.clientRound=null;live.shown=false;live.done=false;
+    live.playerCount=Number(message.playerCount)||0;renderRemote();
+  }
+  if(message.type==='round'){
+    if(typeof message.round!=='number'||typeof message.remainingMs!=='number')return;
+    if(!live.clientRound||live.clientRound.round!==message.round){live.shown=false;live.done=false;}
+    live.clientRound={round:message.round,duration:message.duration,sittingOut:!!message.sittingOut,
+      partners:Array.isArray(message.partners)?message.partners.filter(p=>typeof p==='string').slice(0,2):[],
+      task:typeof message.task==='string'?message.task:''};
+    live.clientDeadline=Date.now()+Math.max(0,message.remainingMs);
+    live.clientPhase=live.clientRound.sittingOut?'sitting':'ready';renderRemote();
+  }
+  if(message.type==='ended'){
+    live.clientPhase='ended';live.clientRound=null;live.shown=false;renderRemote();
+  }
+}
+function createEl(tag,cls,textValue){
+  const el=document.createElement(tag);if(cls)el.className=cls;if(textValue!==undefined)el.textContent=textValue;return el;
+}
+function remoteButton(parent,label,kind,fn){
+  const btn=createEl('button','btn '+(kind||'btn-secondary'),label);btn.type='button';btn.addEventListener('click',fn);parent.append(btn);return btn;
+}
+function renderRemote(){
+  if(mode!=='guest')return;
+  const body=$('remoteBody');body.replaceChildren();$('remoteNotice').textContent='';
+  const round=live.clientRound;
+  $('remotePlayer').textContent=live.clientName;
+  $('remoteRound').textContent=round?'ROUND '+round.round:live.clientPhase==='ended'?'ROUND FINISHED':'WAITING FOR HOST';
+  if(live.clientPhase==='waiting'){
+    body.append(createEl('div','private-icon','◈'));
+    body.append(createEl('h1','',`You're in, ${live.clientName}.`));
+    body.append(createEl('p','',`The host is collecting players${live.playerCount?' ('+live.playerCount+' so far)':''}. You will receive your own private alliance when the round begins.`));
+    body.append(createEl('p','remote-hint','Keep this tab open. No other team assignments are sent to your phone.'));
+  }else if(live.clientPhase==='disconnected'){
+    body.append(createEl('div','private-icon','!'));
+    body.append(createEl('h1','','Host connection lost'));
+    body.append(createEl('p','','Reconnect with the same name and room code. Your place is saved while the host keeps the room open.'));
+    remoteButton(body,'Reconnect','btn-primary',()=>{
+      const room=live.room,name=live.clientName;
+      clearJoinAttempt();mode='join';showJoinScreen(room);$('joinName').value=name;attemptJoin();
+    });
+  }else if(live.clientPhase==='ended'){
+    body.append(createEl('div','end-icon','⌛'));
+    body.append(createEl('h1','','Time’s up!'));
+    body.append(createEl('p','','Your alliance has dissolved. Stay here — the host can start a new round with fresh teammates.'));
+  }else if(live.clientPhase==='sitting'){
+    body.append(createEl('div','private-icon','◌'));
+    body.append(createEl('h1','',`${live.clientName}, you're sitting out.`));
+    body.append(createEl('p','','The group has an odd number of players. You have no partner or task this round. You can join the next shuffle.'));
+  }else if(!live.shown){
+    body.append(createEl('div','private-icon','◈'));
+    body.append(createEl('h1','',`Ready, ${live.clientName}?`));
+    body.append(createEl('p','','Your new alliance is private. Make sure nobody else can see your phone before revealing it.'));
+    remoteButton(body,'Reveal my alliance','btn-primary',()=>{live.shown=true;renderRemote();});
+    body.append(createEl('p','remote-hint','Your partner receives the exact same collaborative task.'));
+  }else {
+    const card=createEl('div','remote-task');
+    const top=createEl('div','mission-top');top.append(createEl('small','',`Only for ${live.clientName}`));
+    const hide=createEl('button','hide-menu','Hide mission');hide.type='button';hide.addEventListener('click',()=>{live.shown=false;renderRemote();});top.append(hide);card.append(top);
+    const label=createEl('div','label-small',(round?.partners.length||0)>1?'Your partners':'Your partner');
+    const partners=createEl('div','partner-name',(round?.partners||[]).join(' & '));
+    card.append(label,partners);
+    const taskbox=createEl('div','task-box');taskbox.append(createEl('div','label-small','Your shared task'),createEl('p','task-text',round?.task||''));card.append(taskbox);
+    const done=remoteButton(card,live.done?'✓ Marked done (undo)':'✓ We did it',live.done?'btn-primary':'btn-secondary',()=>{live.done=!live.done;renderRemote();});done.setAttribute('aria-pressed',String(live.done));
+    body.append(card);
+    body.append(createEl('p','remote-hint','The checkmark is personal — it does not change anyone else’s score.'));
+  }
+  guestTick();
+}
+function guestTick(){
+  if(mode!=='guest')return;
+  let ms=0;
+  if(live.clientRound&&['ready','sitting'].includes(live.clientPhase)){
+    ms=Math.max(0,live.clientDeadline-Date.now());
+    if(ms===0){live.clientPhase='ended';live.clientRound=null;live.shown=false;renderRemote();return;}
+  }
+  $('remoteClock').textContent=live.clientRound?`${String(Math.floor(Math.ceil(ms/1000)/60)).padStart(2,'0')}:${String(Math.ceil(ms/1000)%60).padStart(2,'0')}`:'--:--';
+  $('remoteClock').style.color=ms>0&&ms<=15000?'var(--peach)':'var(--mint)';
+}
+$('hostBtn').addEventListener('click',startLiveHost);
+$('offlineBtn').addEventListener('click',startOffline);
+$('joinBtn').addEventListener('click',()=>showJoinScreen());
+$('joinBackBtn').addEventListener('click',()=>{clearJoinAttempt();showHome();});
+$('joinForm').addEventListener('submit',attemptJoin);
+$('leaveHostBtn').addEventListener('click',()=>{if(mode!=='host'||confirm('Close this game room for everyone?'))leaveRoom();});
+$('copyLinkBtn').addEventListener('click',async()=>{
+  try{await navigator.clipboard.writeText(live.joinUrl);$('roomStatus').textContent='Invite link copied!';}
+  catch(e){const input=document.createElement('textarea');input.value=live.joinUrl;document.body.append(input);input.select();try{document.execCommand('copy');$('roomStatus').textContent='Invite link copied!';}catch(x){$('roomStatus').textContent='Select the link above to copy it.';}input.remove();}
+});
+$('shareLinkBtn').addEventListener('click',async()=>{
+  if(navigator.share)try{await navigator.share({title:'Alliance Builder',text:'Join my Alliance Builder game',url:live.joinUrl});}catch(e){}
+  else $('copyLinkBtn').click();
+});
+if($('guestLeaveBtn'))$('guestLeaveBtn').addEventListener('click',leaveRoom);
+setInterval(guestTick,250);
+// A QR URL opens the join screen directly without inventing a name.
+const initialRoom=new URLSearchParams(location.search).get('room');
+if(initialRoom&&/^[A-Z2-9]{12}$/i.test(initialRoom)){
+  setTimeout(()=>showJoinScreen(initialRoom),0);
+}
+
+renderPlayers();showHome();
+</script>
+</body>
+</html>
